@@ -12,4 +12,3 @@ vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
 
 vim.keymap.set("n", "<tab>", "<C-w>w")
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
-vim.keymap.set("n", "<leader>tt", "<cmd>ToggleTerm<CR>")
