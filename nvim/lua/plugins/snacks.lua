@@ -5,15 +5,13 @@ return {
     ---@type snacks.Config
     opts = {
         bigfile = { enabled = true },
-        dashboard = { enabled = true },
         indent = { enabled = true },
+        dashboard = { enabled = true },
         quickfile = { enabled = true },
         scope = { enabled = true },
-        words = { enabled = true },
     },
     keys = {
-        { "<leader>bd", function() Snacks.bufdelete() end,          desc = "Delete Buffer" },
         { "<leader>br", function() Snacks.rename.rename_file() end, desc = "Rename File" },
-        { "<leader>D",  function() Snacks.dashboard() end,          desc = "Rename File" },
+        { "<leader>D",  function() Snacks.dashboard() end,          desc = "Dashboard" },
     },
 }
