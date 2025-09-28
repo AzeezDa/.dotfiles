@@ -23,3 +23,5 @@ vim.keymap.set("n", "<tab>", "<C-w>w")
 
 -- Easier exit from terminal mode
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
+
+vim.api.nvim_create_user_command('W', 'write', {})
