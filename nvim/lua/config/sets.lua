@@ -21,6 +21,10 @@ vim.opt.textwidth = 100
 
 vim.opt.isfname:append("@-@")
 
-vim.g.netrw_banner = false
 
 vim.opt.showmode = false
+
+vim.g.netrw_banner = false
+vim.g.netrw_list_hide = vim.fn["netrw_gitignore#Hide"]() .. [[,.git/]]
+vim.g.netrw_liststyle = 3
+vim.g.netrw_hide = true
