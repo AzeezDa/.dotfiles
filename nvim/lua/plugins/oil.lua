@@ -12,7 +12,7 @@ return {
 		})
 
 		-- For opening oil
-		vim.keymap.set("n", "<leader>pv", "<cmd>Oil<CR>")
+		vim.keymap.set("n", "-", "<cmd>Oil<CR>")
 		vim.keymap.set("n", "<leader>cv", "<cmd>Oil ~/.config/nvim<CR>")
 	end,
 }

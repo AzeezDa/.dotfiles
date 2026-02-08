@@ -1,18 +1,17 @@
 return {
-    -- Main LSP Configuration
-    'neovim/nvim-lspconfig',
-    dependencies = {
-        { 'mason-org/mason.nvim', opts = {} },
-        'mason-org/mason-lspconfig.nvim',
-        'WhoIsSethDaniel/mason-tool-installer.nvim',
+	-- Main LSP Configuration
+	"neovim/nvim-lspconfig",
+	dependencies = {
+		{ "mason-org/mason.nvim", opts = {} },
+		"mason-org/mason-lspconfig.nvim",
 
-        -- Useful status updates for LSP.
-        { 'j-hui/fidget.nvim',    opts = {} },
+		-- Useful status updates for LSP.
+		{ "j-hui/fidget.nvim", opts = {} },
 
-        -- Allows extra capabilities provided by blink.cmp
-        'saghen/blink.cmp',
-    },
-    config = function()
+		-- Allows extra capabilities provided by blink.cmp
+		"saghen/blink.cmp",
+	},
+	config = function()
         vim.api.nvim_create_autocmd('LspAttach', {
             group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
             callback = function(event)
@@ -45,7 +44,9 @@ return {
 
                 map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
 
-                map('<leader>ld', require('telescope.builtin').diagnostics, 'Diagnostics')
+                map('gd', require('telescope.builtin').diagnostics, 'Diagnostics')
+
+                vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
                 -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
                 ---@param client vim.lsp.Client
@@ -97,11 +98,11 @@ return {
                 end
 
                 if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_codeLens, event.buf) then
-                    vim.lsp.codelens.refresh();
+                    vim.lsp.codelens.refresh()
                     vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
                         callback = function()
                             vim.schedule(function()
-                                vim.lsp.codelens.refresh();
+                                vim.lsp.codelens.refresh()
                             end)
                         end
                     })
@@ -110,80 +111,32 @@ return {
             end,
         })
 
-        -- Diagnostic Config
-        -- See :help vim.diagnostic.Opts
-        vim.diagnostic.config {
-            severity_sort = true,
-            update_in_insert = true,
-            float = { border = 'rounded', source = 'if_many' },
-            underline = true,
-        }
+		vim.diagnostic.config({
+			severity_sort = true,
+			update_in_insert = true,
+			float = { border = "rounded", source = "if_many" },
+			underline = true,
+		})
 
-        local capabilities = require('blink.cmp').get_lsp_capabilities()
+	local capabilities = require("blink.cmp").get_lsp_capabilities()
+	local servers_settings = {
+		harper_ls = {
+			settings = {
+				["harper-ls"] = {
+					dialect = "British",
+				},
+			},
+		},
+		rust_analyzer = {},
+        ltex = {settings = {ltex = {language = "en-GB"}}}
+	}
 
-        -- Enable the following language servers
-        --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
-        --
-        --  Add any additional override configuration in the following tables. Available keys are:
-        --  - cmd (table): Override the default command used to start the server
-        --  - filetypes (table): Override the default list of associated filetypes for the server
-        --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-        --  - settings (table): Override the default settings passed when initializing the server.
-        --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-        local servers = {
-            -- clangd = {},
-            -- rust_analyzer = {},
-            -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-            --
+	for server, settings in pairs(servers_settings) do
+		settings.capabilities = vim.tbl_deep_extend("force", {}, capabilities, settings.capabilities or {})
+		vim.lsp.config(server, settings)
+		vim.lsp.enable(server)
+	end
 
-            lua_ls = {
-                -- cmd = { ... },
-                -- filetypes = { ... },
-                -- capabilities = {},
-                settings = {
-                    Lua = {
-                        completion = {
-                            callSnippet = 'Replace',
-                        },
-                        -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-                        -- diagnostics = { disable = { 'missing-fields' } },
-                    },
-                },
-            },
-        }
-
-        -- Ensure the servers and tools above are installed
-        --
-        -- To check the current status of installed tools and/or manually install
-        -- other tools, you can run
-        --    :Mason
-        --
-        -- You can press `g?` for help in this menu.
-        --
-        -- `mason` had to be setup earlier: to configure its options see the
-        -- `dependencies` table for `nvim-lspconfig` above.
-        --
-        -- You can add other tools here that you want Mason to install
-        -- for you, so that they are available from within Neovim.
-        local ensure_installed = vim.tbl_keys(servers or {})
-        vim.list_extend(ensure_installed, {
-            'stylua', -- Used to format Lua code
-        })
-        require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
-        require('mason-lspconfig').setup {
-            ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-            automatic_installation = false,
-            handlers = {
-                function(server_name)
-                    local server = servers[server_name] or {}
-                    -- This handles overriding only values explicitly passed
-                    -- by the server configuration above. Useful when disabling
-                    -- certain features of an LSP (for example, turning off formatting for ts_ls)
-                    server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-                    require('lspconfig')[server_name].setup(server)
-                end,
-            },
-        }
-    end,
+	require("mason-lspconfig").setup()
+	end,
 }
