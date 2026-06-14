@@ -1,17 +1,17 @@
 return {
-	-- Main LSP Configuration
-	"neovim/nvim-lspconfig",
-	dependencies = {
-		{ "mason-org/mason.nvim", opts = {} },
-		"mason-org/mason-lspconfig.nvim",
+    -- Main LSP Configuration
+    "neovim/nvim-lspconfig",
+    dependencies = {
+        { "mason-org/mason.nvim", opts = {} },
+        "mason-org/mason-lspconfig.nvim",
 
-		-- Useful status updates for LSP.
-		{ "j-hui/fidget.nvim", opts = {} },
+        -- Useful status updates for LSP.
+        { "j-hui/fidget.nvim",    opts = {} },
 
-		-- Allows extra capabilities provided by blink.cmp
-		"saghen/blink.cmp",
-	},
-	config = function()
+        -- Allows extra capabilities provided by blink.cmp
+        "saghen/blink.cmp",
+    },
+    config = function()
         vim.api.nvim_create_autocmd('LspAttach', {
             group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
             callback = function(event)
@@ -107,36 +107,36 @@ return {
                         end
                     })
                 end
-
             end,
         })
 
-		vim.diagnostic.config({
-			severity_sort = true,
-			update_in_insert = true,
-			float = { border = "rounded", source = "if_many" },
-			underline = true,
-		})
+        vim.diagnostic.config({
+            severity_sort = true,
+            update_in_insert = true,
+            float = { border = "rounded", source = "if_many" },
+            underline = true,
+        })
 
-	local capabilities = require("blink.cmp").get_lsp_capabilities()
-	local servers_settings = {
-		harper_ls = {
-			settings = {
-				["harper-ls"] = {
-					dialect = "British",
-				},
-			},
-		},
-		rust_analyzer = {},
-        ltex = {settings = {ltex = {language = "en-GB"}}}
-	}
+        local capabilities = require("blink.cmp").get_lsp_capabilities()
+        local servers_settings = {
+            rust_analyzer = {},
+            ltex = { settings = { ltex = { language = "en-GB" } } },
+            harper_ls = {
+                settings = {
+                    ["harper-ls"] = {
+                        dialect = "British",
+                    },
+                },
+            },
+        }
+        for server, settings in pairs(servers_settings) do
+            settings.capabilities = vim.tbl_deep_extend("force", {}, capabilities, settings.capabilities or {})
+            vim.lsp.config(server, settings)
+            vim.lsp.enable(server)
+        end
 
-	for server, settings in pairs(servers_settings) do
-		settings.capabilities = vim.tbl_deep_extend("force", {}, capabilities, settings.capabilities or {})
-		vim.lsp.config(server, settings)
-		vim.lsp.enable(server)
-	end
-
-	require("mason-lspconfig").setup()
-	end,
+        require("mason-lspconfig").setup {
+            ensure_installed = { "lua_ls", "ltex", "harper_ls" },
+        }
+    end,
 }

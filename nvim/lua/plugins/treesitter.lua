@@ -4,7 +4,7 @@ return {
     lazy = false,
     build = ":TSUpdate",
     config = function()
-        require("nvim-treesitter.install").compilers = { "gcc-12" }
+        require("nvim-treesitter.install").compilers = { "gcc" }
 
         require("nvim-treesitter.configs").setup({
             ensure_installed = { "bash", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline" },
